@@ -1,8 +1,27 @@
 # host-shell-mcp
 
-Windows 네이티브 호스트 세션(`WinSta0\Default`)에서 PowerShell/CMD 실행과 정식 UAC 권한 상승(`runas`)을 제공하는 초경량 무의존성 stdio MCP(Model Context Protocol) 서버입니다.
+Windows 네이티브 호스트 세션(`WinSta0\Default`)에서 PowerShell/CMD 실행과 정식 Windows UAC 권한 상승(`runas`)을 제공하는 초경량 무의존성 stdio MCP(Model Context Protocol) 서버입니다.
 
-> A lightweight, zero-dependency Windows stdio MCP server for running PowerShell/CMD commands in the native Windows desktop session (`WinSta0\Default`) and triggering standard Windows UAC elevation prompts.
+> A lightweight, zero-dependency Windows stdio MCP server that runs PowerShell/CMD in the interactive Windows desktop session (`WinSta0\Default`) and triggers standard Windows UAC elevation prompts with full output capture.
+
+---
+
+## 왜 필요한가? (Why `host-shell-mcp`?)
+
+Windows 환경의 Antigravity 내장 터미널(`run_command`)은 **`Turbo` 모드 + `Terminal Sandbox OFF` 상태에서도** 숨김 데스크톱(`exebox-*`) 안에서 실행됩니다. 이 때문에 일반 CLI 작업은 되지만 다음과 같은 일상적인 Windows 로컬 작업에서 막히거나 무한 대기(Hang)가 발생합니다.
+
+| 작업 유형 | 내장 `run_command` (Windows) | `host-shell-mcp` 사용 시 |
+| --- | --- | --- |
+| GUI 앱 실행 (`Start-Process` 등) | 숨김 데스크톱에서 실행되어 화면에 안 뜨거나 실패 | 실제 사용자 데스크톱(`WinSta0\Default`)에 정상 표시 |
+| 창·프로세스 제어 / GUI 자동화 | 데스크톱 세션이 달라 상호작용 불가 | 호스트 세션에서 바로 상호작용 가능 |
+| 관리자 권한 작업 (`sudo` / `RunAs`) | 숨김 데스크톱에서 UAC 창이 안 보여 무한 대기(Hang) | 사용자 화면에 정식 Windows UAC 승인창 표시 후 결과(stdout/stderr/ExitCode) 반환 |
+
+### 핵심 장점
+- **무의존성 1초 로컬 빌드**: Git, Node.js, Python, .NET SDK가 전혀 필요 없습니다. Windows 10/11 기본 내장 `.NET Framework csc.exe`로 즉시 컴파일합니다.
+- **완전 원터치 세팅**: PowerShell 한 줄로 빌드 → MCP 핸드셰이크 검증 → `mcp_config.json` 안전 병합(백업 포함) → `GEMINI.md` 전역 규칙 등록까지 한 번에 끝납니다.
+- **정식 UAC 기반 설계**: UAC를 몰래 우회하지 않고 매번 표준 Windows UAC 승인 창(`Verb = "runas"`)을 띄워 사용자 확인을 거칩니다.
+
+---
 
 ## 원터치 설치 (권장 — Git·SDK 불필요)
 
@@ -23,6 +42,8 @@ irm https://raw.githubusercontent.com/servaltullius/host-shell-mcp/main/install.
 ```powershell
 irm https://raw.githubusercontent.com/servaltullius/host-shell-mcp/main/uninstall.ps1 | iex
 ```
+
+---
 
 ## 수동 / 오프라인 설치
 
@@ -47,6 +68,8 @@ install.bat
 }
 ```
 
+---
+
 ## 제공 도구 (Tools)
 
 | 도구명 | 설명 |
@@ -54,6 +77,8 @@ install.bat
 | `execute_command` | PowerShell 또는 CMD 명령을 호스트 데스크톱 세션에서 실행하고 stdout/stderr 및 종료 코드를 반환합니다. (창이 유지되는 GUI 앱 실행은 `Start-Process` 사용 권장) |
 | `execute_elevated` | Windows 정식 UAC 승인 창(`Verb = "runas"`)을 띄워 사용자 승인 후 관리자 권한 PowerShell 명령을 실행하고 결과를 반환합니다. |
 | `get_session_info` | 현재 프로세스의 `WindowStation`, `ThreadDesktop`, 관리자 여부(`IsAdmin`), `IsProcessInJob` 상태를 진단 출력합니다. |
+
+---
 
 ## 보안 주의사항
 
