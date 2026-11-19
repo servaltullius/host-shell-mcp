@@ -31,6 +31,12 @@ Windows PowerShell을 열고 아래 **한 줄**만 붙여넣고 실행한 뒤, A
 irm https://raw.githubusercontent.com/servaltullius/host-shell-mcp/main/install.ps1 | iex
 ```
 
+> **Windows Defender 오탐(`ClickFix`)으로 위 명령이 차단되는 경우**: 메모리 직실행(`irm | iex`) 대신 파일로 내려받아 실행하세요.
+> ```powershell
+> curl.exe -fsSL https://raw.githubusercontent.com/servaltullius/host-shell-mcp/main/install.ps1 -o install.ps1
+> powershell -ExecutionPolicy Bypass -File .\install.ps1
+> ```
+
 설치 스크립트가 자동으로 수행하는 작업:
 1. Windows 기본 내장 `.NET Framework csc.exe`로 `Program.cs`를 로컬 컴파일(실패 시 최신 Release 바이너리 자동 폴백) → `%USERPROFILE%\.gemini\antigravity\bin\host-shell-mcp\host-shell-mcp.exe`
 2. MCP `initialize` 핸드셰이크 동작 자가 검증
