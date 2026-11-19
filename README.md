@@ -15,7 +15,8 @@ irm https://raw.githubusercontent.com/servaltullius/host-shell-mcp/main/install.
 설치 스크립트가 자동으로 수행하는 작업:
 1. Windows 기본 내장 `.NET Framework csc.exe`로 `Program.cs`를 로컬 컴파일(실패 시 최신 Release 바이너리 자동 폴백) → `%USERPROFILE%\.gemini\antigravity\bin\host-shell-mcp\host-shell-mcp.exe`
 2. MCP `initialize` 핸드셰이크 동작 자가 검증
-3. `%USERPROFILE%\.gemini\config\mcp_config.json` 자동 백업 후 `host-shell` 항목 안전 병합 (기존 다른 MCP 설정 유지)
+3. `%USERPROFILE%\.gemini\config\mcp_config.json` 자동 백업 후 `host-shell` 항목 안전 병합 (기존 MCP 설정 유지, 레거시 경로가 존재하면 함께 반영)
+4. `%USERPROFILE%\.gemini\GEMINI.md`에 `host-shell` 우선 사용 규칙 추가 (Lazy MCP 특성상 규칙이 있어야 Antigravity가 GUI/UAC 작업 시 자동으로 `host-shell`을 선택함; 기존 규칙이 있으면 건너뜀)
 
 ### 제거 (원터치)
 
@@ -50,7 +51,7 @@ install.bat
 
 | 도구명 | 설명 |
 | --- | --- |
-| `execute_command` | PowerShell 또는 CMD 명령을 호스트 데스크톱 세션에서 실행하고 stdout/stderr 및 종료 코드를 반환합니다. |
+| `execute_command` | PowerShell 또는 CMD 명령을 호스트 데스크톱 세션에서 실행하고 stdout/stderr 및 종료 코드를 반환합니다. (창이 유지되는 GUI 앱 실행은 `Start-Process` 사용 권장) |
 | `execute_elevated` | Windows 정식 UAC 승인 창(`Verb = "runas"`)을 띄워 사용자 승인 후 관리자 권한 PowerShell 명령을 실행하고 결과를 반환합니다. |
 | `get_session_info` | 현재 프로세스의 `WindowStation`, `ThreadDesktop`, 관리자 여부(`IsAdmin`), `IsProcessInJob` 상태를 진단 출력합니다. |
 
