@@ -8,13 +8,15 @@ Windows 네이티브 호스트 세션(`WinSta0\Default`)에서 PowerShell/CMD �
 
 ## 왜 필요한가? (Why `host-shell-mcp`?)
 
-Windows 환경의 Antigravity 내장 터미널(`run_command`)은 **`Turbo` 모드 + `Terminal Sandbox OFF` 상태에서도** 숨김 데스크톱(`exebox-*`) 안에서 실행됩니다. 이 때문에 일반 CLI 작업은 되지만 다음과 같은 일상적인 Windows 로컬 작업에서 막히거나 무한 대기(Hang)가 발생합니다.
+Claude Code·Codex CLI 같은 도구는 사용자가 연 **일반 Windows 터미널(`WinSta0\Default`) 위에서 직접 실행**되므로 GUI 앱 실행이나 데스크톱 제어, 권한 상승에서 데스크톱 격리 문제가 생기지 않습니다.
 
-| 작업 유형 | 내장 `run_command` (Windows) | `host-shell-mcp` 사용 시 |
-| --- | --- | --- |
-| GUI 앱 실행 (`Start-Process` 등) | 숨김 데스크톱에서 실행되어 화면에 안 뜨거나 실패 | 실제 사용자 데스크톱(`WinSta0\Default`)에 정상 표시 |
-| 창·프로세스 제어 / GUI 자동화 | 데스크톱 세션이 달라 상호작용 불가 | 호스트 세션에서 바로 상호작용 가능 |
-| 관리자 권한 작업 (`sudo` / `RunAs`) | 숨김 데스크톱에서 UAC 창이 안 보여 무한 대기(Hang) | 사용자 화면에 정식 Windows UAC 승인창 표시 후 결과(stdout/stderr/ExitCode) 반환 |
+반면 Windows 환경의 Antigravity 내장 터미널(`run_command`)은 **`Turbo` 모드 + `Terminal Sandbox OFF` 상태에서도** 숨김 데스크톱(`exebox-*`)과 Job Object 안에서 실행됩니다. 이 때문에 일반 CLI 작업은 되지만 다음과 같은 일상적인 Windows 로컬 작업에서 막히거나 무한 대기(Hang)가 발생합니다.
+
+| 작업 유형 | Claude Code / Codex CLI | Antigravity 내장 `run_command` (Windows) | `host-shell-mcp` 적용 시 |
+| --- | --- | --- | --- |
+| GUI 앱 실행 (`Start-Process` 등) | 일반 데스크톱에 바로 표시 | 숨김 데스크톱에서 실행되어 화면에 안 뜨거나 실패 | 실제 사용자 데스크톱(`WinSta0\Default`)에 정상 표시 |
+| 창·프로세스 제어 / GUI 자동화 | 호스트 세션에서 바로 가능 | 데스크톱 세션이 달라 상호작용 불가 | 호스트 세션에서 바로 상호작용 가능 |
+| 관리자 권한 작업 (`sudo` / `RunAs`) | 사용자 화면에 UAC 창 정상 표시 | 숨김 데스크톱에서 UAC 창이 안 보여 무한 대기(Hang) | 사용자 화면에 정식 Windows UAC 승인창 표시 후 결과(stdout/stderr/ExitCode) 반환 |
 
 ### 핵심 장점
 - **무의존성 1초 로컬 빌드**: Git, Node.js, Python, .NET SDK가 전혀 필요 없습니다. Windows 10/11 기본 내장 `.NET Framework csc.exe`로 즉시 컴파일합니다.
